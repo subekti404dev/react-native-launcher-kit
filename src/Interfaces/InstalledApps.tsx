@@ -11,6 +11,7 @@ export interface AppDetail {
   label: string;
   packageName: string;
   icon: string;
+  banner?: string;
   version?: string;
   accentColor?: string;
 }

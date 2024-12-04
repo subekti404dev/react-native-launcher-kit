@@ -78,7 +78,9 @@ public class LauncherKitModule extends ReactContextBaseJavaModule {
     CharSequence label;
     CharSequence packageName;
     Drawable icon;
+    Drawable banner;
     String iconPath;
+    String bannerPath;
     String version;
     String accentColor;  // Store the accent color of the icon
 
@@ -95,11 +97,23 @@ public class LauncherKitModule extends ReactContextBaseJavaModule {
       this.label = ri.loadLabel(pManager);
       this.packageName = ri.activityInfo.packageName;
       this.icon = ri.loadIcon(pManager);
+      this.banner = ri.activityInfo.loadBanner(pManager);
+
+      if (this.banner == null) {
+        this.banner = ri.activityInfo.applicationInfo.loadBanner(pManager);
+      }
 
       // Process the icon to a Bitmap
       Bitmap iconBitmap = drawableToBitmap(this.icon);
       if (iconBitmap != null) {
         this.iconPath = saveIconToFile(iconBitmap, this.packageName.toString(), context);
+      }
+
+      if (this.banner != null) {
+           Bitmap bannerBitmap = drawableToBitmap(this.banner);
+        if (bannerBitmap != null) {
+          this.bannerPath = saveIconToFile(bannerBitmap, this.packageName.toString() + "_banner", context);
+        }
       }
 
       if (includeVersion) {
@@ -164,6 +178,7 @@ public class LauncherKitModule extends ReactContextBaseJavaModule {
       return "{\"label\":\"" + label +
         "\", \"packageName\":\"" + packageName +
         "\", \"icon\":\"file://" + iconPath +
+        "\", \"banner\":\"" + (bannerPath != null ? "file://" + bannerPath : "") +
         "\", \"version\":\"" + version +
         "\", \"accentColor\":\"" + accentColor + "\"}";
     }
